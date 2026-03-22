@@ -5,7 +5,6 @@ const parseChat = async (fileContent) => {
   try {
     const rawMessages = whatsappParser.parse(fileContent);
 
-    // Normalize the output to ensure consistency
     const normalizedMessages = rawMessages.map((msg) => ({
       timestamp: msg.date.toISOString(),
       sender: msg.author,
