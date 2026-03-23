@@ -1,4 +1,6 @@
 const dayjs = require("dayjs");
+const Sentiment = require("sentiment");
+const sentiment = new Sentiment();
 
 const SESSION_GAP_HOURS = 4;
 
@@ -18,6 +20,8 @@ const calculateStats = (messages) => {
       avgResponseTimeMinutes: 0,
       doubleTextCount: 0,
       initiationCount: 0,
+      totalSentiment: 0,
+      avgSentiment: 0,
     };
   });
 
@@ -30,6 +34,10 @@ const calculateStats = (messages) => {
     // Basic counts
     stats[sender].messageCount++;
     stats[sender].wordCount += msg.message.trim().split(/\s+/).filter(w => w.length > 0).length;
+
+    // Analyze Sentiment
+    const sentAnalysis = sentiment.analyze(msg.message);
+    stats[sender].totalSentiment += sentAnalysis.comparative;
 
     if (lastMessage) {
       const lastTimestamp = dayjs(lastMessage.timestamp);
@@ -70,7 +78,12 @@ const calculateStats = (messages) => {
       pStats.avgResponseTimeMinutes = parseFloat((pStats.totalResponseTime / pStats.responseCount).toFixed(1));
     }
 
+    if (pStats.messageCount > 0) {
+      pStats.avgSentiment = parseFloat((pStats.totalSentiment / pStats.messageCount).toFixed(3));
+    }
+
     // Cleaning up raw totals before sending back
+    delete pStats.totalSentiment;
     delete pStats.totalResponseTime;
     delete pStats.responseCount;
   });

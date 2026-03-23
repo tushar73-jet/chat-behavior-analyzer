@@ -54,6 +54,19 @@ const generateInsights = (analysis) => {
   if (userStats[u1].avgWordPerMessage < 3) insights.push(`${u1}'s replies are very dry (low word count).`);
   if (userStats[u2].avgWordPerMessage < 3) insights.push(`${u2}'s replies are very dry.`);
 
+  // Sentiment / Tone Analysis
+  const s1 = userStats[u1].avgSentiment;
+  const s2 = userStats[u2].avgSentiment;
+
+  if (s1 > s2 + 0.1) {
+    insights.push(`${u1} seems more positive or enthusiastic in this conversation compared to ${u2}.`);
+  } else if (s2 > s1 + 0.1) {
+    insights.push(`${u2} seems more positive or enthusiastic.`);
+  }
+
+  if (s1 < -0.05) insights.push(`The overall tone from ${u1} appears slightly cold or negative.`);
+  if (s2 < -0.05) insights.push(`The overall tone from ${u2} appears slightly cold or negative.`);
+
   return insights;
 };
 
